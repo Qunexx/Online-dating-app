@@ -6,6 +6,7 @@
     <title>Laravel</title>
     @vite('resources/js/app.js')
     @inertiaHead
+    @routes
 </head>
 <body>
 @inertia
