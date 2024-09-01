@@ -43,56 +43,62 @@
 import DefaultLayout from '../Shared/DefaultLayout.vue';
 
 export default {
-    components: {
-        DefaultLayout
-    },
-    data() {
-        return {
-            name: '',
-            email: '',
-            password: '',
-            password_confirmation: '',
-            passwordMismatch: false,
-            errors: {},
-        };
-    },
-    methods: {
-        submit() {
-            this.errors = {};
-            if (!this.name) {
-                this.errors.name = 'Имя обязательно.';
-            }
-            if (!this.email) {
-                this.errors.email = 'Email обязателен.';
-            } else if (!this.validateEmail(this.email)) {
-                this.errors.email = 'Введите корректный email.';
-            }
-            if (!this.password) {
-                this.errors.password = 'Пароль обязателен.';
-            } else if (this.password.length < 8) {
-                this.errors.password = 'Пароль должен содержать минимум 8 символов.';
-            }
-            if (this.password !== this.password_confirmation) {
-                this.passwordMismatch = true;
-            } else {
-                this.passwordMismatch = false;
-            }
-
-            if (Object.keys(this.errors).length > 0 || this.passwordMismatch) {
-                return;
-            }
-
-            this.$inertia.post('/register', {
-                name: this.name,
-                email: this.email,
-                password: this.password,
-                password_confirmation: this.password_confirmation,
-            });
+        components: {
+            DefaultLayout
         },
-        validateEmail(email) {
-            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return re.test(email);
+        data() {
+            return {
+                name: '',
+                email: '',
+                password: '',
+                password_confirmation: '',
+                passwordMismatch: false,
+                errors: {},
+            };
         },
-    },
-}
+        methods: {
+            submit() {
+                this.errors = {};
+                if (!this.name) {
+                    this.errors.name = ['Имя обязательно.'];
+                }
+                if (!this.email) {
+                    this.errors.email = ['Email обязателен.'];
+                } else if (!this.validateEmail(this.email)) {
+                    this.errors.email = ['Введите корректный email.'];
+                }
+                if (!this.password) {
+                    this.errors.password = ['Пароль обязателен.'];
+                } else if (this.password.length < 8) {
+                    this.errors.password = ['Пароль должен содержать минимум 8 символов.'];
+                }
+                if (this.password !== this.password_confirmation) {
+                    this.passwordMismatch = true;
+                } else {
+                    this.passwordMismatch = false;
+                }
+
+                if (Object.keys(this.errors).length > 0 || this.passwordMismatch) {
+                    return;
+                }
+
+                this.$inertia.post('/register', {
+                    name: this.name,
+                    email: this.email,
+                    password: this.password,
+                    password_confirmation: this.password_confirmation,
+                }, {
+                    onError: (errors) => {
+                        this.errors = errors;
+                    },
+                    onSuccess: () => {
+                    }
+                });
+            },
+            validateEmail(email) {
+                const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return re.test(email);
+            },
+        }
+    }
 </script>

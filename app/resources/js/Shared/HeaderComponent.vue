@@ -23,7 +23,7 @@
                 </div>
             </nav>
             <div class="d-flex align-items-center">
-                <template v-if="isAuthenticated">
+                <template v-if="$page.props.user">
                     <div class="dropdown">
                         <button
                             class="btn btn-secondary dropdown-toggle"
@@ -32,20 +32,18 @@
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
                         >
-                            <img :src="userAvatar" alt="User Avatar" class="rounded-circle" width="30" height="30">
-                            <span class="ms-2">{{ username }}</span>
+                            <span class="ms-2">{{ $page.props.user.name }}</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <li><Link class="dropdown-item" :href="route('register')">Профиль</Link></li>
-                            <li><Link class="dropdown-item" :href="route('register')">Настройки</Link></li>
+                            <li><Link class="dropdown-item" :href="route('profile.index')">Профиль</Link></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><Link class="dropdown-item" :href="route('register')">Выход</Link></li>
+                            <li><Link class="dropdown-item" :href="route('logout.post')">Выход</Link></li>
                         </ul>
                     </div>
                 </template>
                 <template v-else>
-                    <Link :href="route('login')" class="text-white me-3">Войти</Link>
-                    <Link :href="route('register')" class="text-white me-3">Зарегистрироваться</Link>
+                    <Link :href="route('login.index')" class="text-white me-3">Войти</Link>
+                    <Link :href="route('register.index')" class="text-white me-3">Зарегистрироваться</Link>
                 </template>
             </div>
         </div>
