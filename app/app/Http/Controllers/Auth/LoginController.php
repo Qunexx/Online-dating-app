@@ -2,13 +2,15 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class LoginController extends Controller
 {
-    public function showLoginForm()
+    public function showLoginForm() : Response
     {
         return Inertia::render('login', [
             'error' => session()->get('error'),
@@ -25,7 +27,7 @@ class LoginController extends Controller
         ]);
 
         if (auth()->attempt($request->only('email', 'password'))) {
-            return redirect()->intended(route('home'));
+            return redirect()->intended(route('home'))->with('success','Вы успешно авторизовались');
         }
 
 
@@ -35,7 +37,7 @@ class LoginController extends Controller
             ],
         ]);
     }
-    public function logout()
+    public function logout() : RedirectResponse
     {
         auth()->logout();
         return redirect('/login');

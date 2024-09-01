@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Middleware\AuthMiddleware;
@@ -17,6 +18,10 @@ Route::get('/logout', [LoginController::class, 'logout'])->name('logout.post');
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register.index');
 Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
 
+
+Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index')->middleware(AuthMiddleware::class);
+Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit')->middleware(AuthMiddleware::class);
+Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update')->middleware(AuthMiddleware::class);
 
 Route::get('/about', function () {
     return Inertia::render('about');
