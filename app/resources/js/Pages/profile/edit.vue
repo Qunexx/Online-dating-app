@@ -2,7 +2,7 @@
     <DefaultLayout>
         <div class="container mt-5">
             <h1 class="text-center mb-4">Редактировать профиль</h1>
-            <form @submit.prevent="submitProfile">
+            <form @submit.prevent="submitProfile" >
                 <div class="mb-3">
                     <label for="bio" class="form-label">Биография</label>
                     <textarea v-model="form.bio" class="form-control" id="bio"></textarea>
@@ -80,7 +80,7 @@
                 </div>
 
                 <div class="text-center mt-4 mb-5 d-flex justify-content-center">
-                    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                    <button type="submit" class="btn btn-primary mb-5">Сохранить изменения</button>
                     <div class="ms-3">
                         <Link :href="route('profile.index')"><div class="btn btn-secondary">Назад</div></Link>
                     </div>
