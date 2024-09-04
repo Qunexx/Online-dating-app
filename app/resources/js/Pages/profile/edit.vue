@@ -38,7 +38,7 @@
                     <span v-if="errors.interests" class="text-danger">{{ errors.interests[0] }}</span>
                 </div>
 
-
+                <div v-if="$page.props.profile.photos.length > 0" class="row mb-3">
                 <h3>Уже загруженные фотографии</h3>
                 <a>Отметьте галочками свои фотографии, если хотите их удалить</a>
                 <div class="row mb-3">
@@ -54,12 +54,14 @@
                         </div>
                     </div>
                 </div>
+                </div>
 
                 <div class="mb-3">
                     <label for="photos" class="form-label">Загрузить фотографии профиля (до 5)</label>
                     <input type="file" @change="handleFileUpload" class="form-control" id="photos" accept="image/*" multiple />
                     <span v-if="errors.photos" class="text-danger">{{ errors.photos[0] }}</span>
                 </div>
+                <div v-if="selectedFiles.length > 0" class="row mb-3">
                 <h3>Новые фотографии</h3>
                 <div class="row mb-3">
                     <div v-for="(photo, index) in selectedFiles" :key="index" class="col-6 col-md-4 col-lg-3 mb-3">
@@ -71,24 +73,36 @@
                         </div>
                     </div>
                 </div>
+                </div>
+                <div v-if="$page.props.profile.photos.length === 0 && selectedFiles.length === 0" class="alert alert-warning">
+                    Добавьте фотографии профиля.
+                    Чем больше, тем лучше, так вы быстрее найдёте свой мэтч!
+                </div>
 
-                <div class="text-center mt-4 mb-5">
+                <div class="text-center mt-4 mb-5 d-flex justify-content-center">
                     <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                    <div class="ms-3">
+                        <Link :href="route('profile.index')"><div class="btn btn-secondary">Назад</div></Link>
+                    </div>
                 </div>
             </form>
+
         </div>
     </DefaultLayout>
 </template>
 
 <script>
-import { ref, computed } from 'vue';
+import { ref, computed} from 'vue';
 import { Inertia } from '@inertiajs/inertia';
 import DefaultLayout from '../../Shared/DefaultLayout.vue';
 import { route } from "ziggy-js";
+import { Link } from '@inertiajs/inertia-vue3';
 
 export default {
+    methods: {route},
     components: {
-        DefaultLayout
+        DefaultLayout,
+        Link
     },
     props: {
         profile: Object,
