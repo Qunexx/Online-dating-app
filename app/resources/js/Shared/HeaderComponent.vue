@@ -56,16 +56,19 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown">
                             <li v-if="notifications.length === 0" class="dropdown-item">Нет уведомлений</li>
-                            <li v-for="notification in notifications" :key="notification.id">
-                                <Link class="dropdown-item" :href="route('notifications.show', notification.id)">
-                                    {{ notification.message }}
-                                </Link>
+                            <li v-for="notification in notifications" :key="notification.id" class="notification-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="notification-message">{{ notification.message }}</span>
+                                    <button @click.stop.prevent="hideNotification(notification.id)" class="btn btn-link text-muted">
+                                        Пометить прочитанным
+                                    </button>
+                                </div>
                             </li>
                         </ul>
                     </div>
 
                     <Link :href="route('messages.index')" class="btn btn-secondary me-3">
-                        Сообщения <span class="badge bg-danger">{{ unreadMessagesCount }}</span>
+                        Сообщения
                     </Link>
                 </template>
                 <template v-else>
@@ -78,33 +81,79 @@
 </template>
 
 <script>
-import {Link} from '@inertiajs/inertia-vue3';
-import {route} from 'ziggy-js';
+import { ref } from 'vue';
+import { Link } from '@inertiajs/inertia-vue3';
+import { route } from 'ziggy-js';
+import Pusher from "pusher-js";
+import Echo from "laravel-echo";
+import axios from 'axios';
 
 export default {
     name: 'HeaderComponent',
     components: {
         Link
     },
-    data() {
+    setup() {
+        const notifications = ref([]);
+        const authorizedUserId = ref(null);
+        const unreadNotificationsCount = ref(0);
+
+        const initializePusher = () => {
+            window.Pusher = Pusher;
+            window.Echo = new Echo({
+                broadcaster: 'pusher',
+                key: import.meta.env.VITE_PUSHER_APP_KEY,
+                cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
+                forceTLS: true,
+            });
+            Pusher.logToConsole = true;
+
+            const userId = authorizedUserId.value;
+
+            window.Echo.private(`notifications.${userId}`)
+                .listen(".new-notification", (e) => {
+                    notifications.value.push({
+                        id: e.id,
+                        message: e.message,
+                    });
+                    unreadNotificationsCount.value++;
+                });
+        };
+
+        const fetchNotifications = async () => {
+            try {
+                const response = await axios.get('/notifications');
+                notifications.value = response.data.notifications;
+                authorizedUserId.value = response.data.user.id;
+                unreadNotificationsCount.value = notifications.value.length;
+            } catch (error) {
+                console.error('Error', error);
+            }
+        };
+
+        const hideNotification = async (notificationId) => {
+            try {
+                await axios.post(`/hide-notification/${notificationId}`);
+                notifications.value = notifications.value.filter(notification => notification.id !== notificationId);
+                unreadNotificationsCount.value = notifications.value.length;
+            } catch (error) {
+                console.error('Error', error);
+            }
+        };
+
         return {
-            unreadNotificationsCount: 0,
-            unreadMessagesCount: 0,
-            notifications: [],
+            notifications,
+            authorizedUserId,
+            unreadNotificationsCount,
+            initializePusher,
+            fetchNotifications,
+            hideNotification,
+            route,
         };
     },
-    mounted() {
-        this.fetchNotifications();
-        this.fetchMessagesCount();
+    async mounted() {
+        await this.fetchNotifications();
+        this.initializePusher();
     },
-    methods: {
-        route,
-        async fetchNotifications() {
-
-        },
-        async fetchMessagesCount() {
-
-        }
-    }
 }
 </script>

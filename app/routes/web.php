@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PairSearchingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
@@ -37,8 +38,13 @@ Route::post('/messages', [MessageController::class, 'store'])->name('messages.po
 Route::get('/search-pair', [PairSearchingController::class, 'searchPair'])->name('search-pair')->middleware(AuthMiddleware::class);
 
 
-Route::post('/profiles/{profile}/like', [PairSearchingController::class, 'like'])->name('profiles.like');
-Route::post('/profiles/{profile}/dislike', [PairSearchingController::class, 'dislike'])->name('profiles.dislike');
+Route::post('/profiles/{profile}/like', [PairSearchingController::class, 'like'])->name('profiles.like')->middleware(AuthMiddleware::class);
+Route::post('/profiles/{profile}/dislike', [PairSearchingController::class, 'dislike'])->name('profiles.dislike')->middleware(AuthMiddleware::class);
+
+
+
+Route::get('/notifications', [NotificationController::class, 'getNotifications'])->name('notifications')->middleware(AuthMiddleware::class);
+Route::post('/hide-notification/{notificationId}', [NotificationController::class, 'hideNotification'])->middleware(AuthMiddleware::class);
 
 Route::get('/about', function () {
     return Inertia::render('about');
