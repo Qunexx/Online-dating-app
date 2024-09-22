@@ -6,6 +6,8 @@ import { Link } from '@inertiajs/inertia-vue3';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap';
 
+
+
 createInertiaApp({
     resolve: name => {
         const pages = import.meta.glob('./Pages/**/*.vue', { eager: true });
