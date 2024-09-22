@@ -26,5 +26,8 @@ class Profile extends Model
     {
         return $this->hasMany(ProfilePhoto::class);
     }
-
+    public function likes()
+    {
+        return $this->hasMany(Like::class);
+    }
 }
