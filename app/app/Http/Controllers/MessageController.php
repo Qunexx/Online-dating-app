@@ -3,13 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Events\NewMessage;
+use App\Models\Message;
+use http\Env\Response;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
 class MessageController extends Controller
 {
-    public function index()
+    public function index() : \Inertia\Response
     {
         $users = \App\Models\User::all();
         return Inertia::render('messages/index', [
@@ -19,7 +23,7 @@ class MessageController extends Controller
         ]);
     }
 
-    public function fetchMessages($recipientId)
+    public function fetchMessages($recipientId) : \Inertia\Response
     {
         $messages = \App\Models\Message::where('sender_id', auth()->id())
             ->where('receiver_id', $recipientId)
@@ -35,7 +39,7 @@ class MessageController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request) : RedirectResponse
     {
         $request->validate([
             'recipient_id' => 'required|exists:users,id',

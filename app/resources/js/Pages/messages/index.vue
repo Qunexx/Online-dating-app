@@ -16,9 +16,20 @@
                 </div>
                 <div class="col-md-8">
                     <div class="chat-box card">
-                        <div class="card-header">
-                            Чат
+                        <div v-if="selectedRecipient" class="card-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Чат с пользователем:</strong> {{ selectedRecipientName }}
+                            </div>
+                            <div>
+                                <a :href="`/profile/${selectedRecipient}`" class="btn btn-link">Перейти в профиль</a>
+                            </div>
                         </div>
+                        <div v-else class="card-header">
+                            <div class="text-center">
+                                <strong>Выберите пользователя для начала диалога</strong>
+                            </div>
+                        </div>
+
                         <div class="card-body" ref="chatBox" style="height: 300px; overflow-y: scroll;" @scroll="handleScroll">
                             <div v-for="message in messages" :key="message.id" class="message">
                                 <strong>{{ message.sender.name }}:</strong> {{ message.content }}
@@ -57,11 +68,13 @@ export default {
             newMessage: '',
             scrollPosition: 0,
             isAtBottom: true,
+            selectedRecipientName: '',
         };
     },
     mounted() {
         this.initializePusher();
         this.restoreScrollPosition();
+        this.restoreSelectedRecipientName();
     },
     methods: {
         initializePusher() {
@@ -75,49 +88,63 @@ export default {
             Pusher.logToConsole = true;
 
 
-
-            window.Echo.private(`chat.3`)
-                .listen(".new-message", (e) => {
-                    const senderUser = this.users.find(user => user.id === e.sender);
-                    const senderName = senderUser.name;
-
-                    if (this.$refs.chatBox) {
-                        this.scrollPosition = this.$refs.chatBox.scrollTop;
-                        localStorage.setItem(`scrollPosition_${this.selectedRecipient}`, this.scrollPosition);
-                    }
-                    this.messages.push({
-                        content: e.message,
-                        sender: {
-                            name: senderName
-                        },
-                        receiver: e.receiver
-                    });
-
-
-                    // this.selectRecipient(this.selectedRecipient);
-
-                    this.$nextTick(() => {
+                window.Echo.private(`chat.3`)
+                    .listen(".new-message", (e) => {
+                        const senderName = this.users.find(user => user.id === e.sender);
+                        const receiverName = this.users.find(user => user.id === e.receiver);
                         if (this.$refs.chatBox) {
-                            if (this.isAtBottom) {
-                                this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
-                            } else {
-                                this.$refs.chatBox.scrollTop = this.scrollPosition;
-                            }
+                            this.scrollPosition = this.$refs.chatBox.scrollTop;
+                            localStorage.setItem(`scrollPosition_${this.selectedRecipient}`, this.scrollPosition);
                         }
+                        const isCurrentUserSender = e.sender !== this.current_user_id;
+                        this.messages.push({
+                            content: e.message,
+                            sender: {
+                                name: isCurrentUserSender ? senderName.name : receiverName.name
+                            },
+                            receiver: {
+                                name: isCurrentUserSender ? receiverName.name : senderName.name
+                            }
+                        });
+                        this.$nextTick(() => {
+                            if (this.$refs.chatBox) {
+                                if (this.isAtBottom) {
+                                    this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
+                                } else {
+                                    this.$refs.chatBox.scrollTop = this.scrollPosition;
+                                }
+                            }
+                        });
                     });
-                });
+
         },
         selectRecipient(recipientId) {
             if (this.$refs.chatBox) {
                 this.scrollPosition = this.$refs.chatBox.scrollTop;
                 localStorage.setItem(`scrollPosition_${this.selectedRecipient}`, this.scrollPosition);
             }
+            const recipientUser = this.users.find(user => user.id === recipientId);
+            this.selectedRecipientName = recipientUser.name;
+            localStorage.setItem(`selectedRecipientName_${recipientId}`, this.selectedRecipientName);
             this.$inertia.visit(`/messages/${recipientId}`, {preserveScroll: true});
         },
         restoreScrollPosition() {
             const savedScrollPosition = localStorage.getItem(`scrollPosition_${this.selectedRecipient}`);
             if (savedScrollPosition !== null && this.$refs.chatBox) {
                 this.$refs.chatBox.scrollTop = parseInt(savedScrollPosition, 10);
+            }
+        },
+        restoreSelectedRecipientName() {
+            if (this.selectedRecipient) {
+                const savedRecipientName = localStorage.getItem(`selectedRecipientName_${this.selectedRecipient}`);
+                if (savedRecipientName !== null) {
+                    this.selectedRecipientName = savedRecipientName;
+                } else {
+                    const recipientUser = this.users.find(user => user.id === this.selectedRecipient);
+                    if (recipientUser) {
+                        this.selectedRecipientName = recipientUser.name;
+                    }
+                }
             }
         },
         handleScroll() {
