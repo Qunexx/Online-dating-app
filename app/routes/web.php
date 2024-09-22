@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\PairSearchingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -24,10 +25,20 @@ Route::post('/register', [RegisterController::class, 'register'])->name('registe
 Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index')->middleware(AuthMiddleware::class);
 Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit')->middleware(AuthMiddleware::class);
 Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update')->middleware(AuthMiddleware::class);
+Route::get('/profile/{user_id}', [ProfileController::class, 'show'])->name('profile.show')->middleware(AuthMiddleware::class);
+
 
 Route::get('/messages', [MessageController::class, 'index'])->name('messages.index')->middleware(AuthMiddleware::class);
 Route::get('/messages/{recipient}', [MessageController::class, 'fetchMessages'])->name('messages.fetchMessages')->middleware(AuthMiddleware::class);
 Route::post('/messages', [MessageController::class, 'store'])->name('messages.post')->middleware(AuthMiddleware::class);
+
+
+
+Route::get('/search-pair', [PairSearchingController::class, 'searchPair'])->name('search-pair')->middleware(AuthMiddleware::class);
+
+
+Route::post('/profiles/{profile}/like', [PairSearchingController::class, 'like'])->name('profiles.like');
+Route::post('/profiles/{profile}/dislike', [PairSearchingController::class, 'dislike'])->name('profiles.dislike');
 
 Route::get('/about', function () {
     return Inertia::render('about');
