@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Events\NewMessage;
+use App\Events\NewNotification;
+use App\Http\Services\NotificationService;
 use App\Models\Message;
 use http\Env\Response;
 use Illuminate\Http\RedirectResponse;
@@ -52,8 +54,12 @@ class MessageController extends Controller
             'receiver_id' => $request->recipient_id,
         ]);
 
-        $user = Auth::user();
+        $user = auth()->user();
         broadcast(new NewMessage($message, $request->recipient_id))->toOthers();
+        $notification = new NotificationService;
+        $notification->createNotification($request->recipient_id, "Новое сообщение от " . $user->name);
+//        broadcast(new NewNotification("New message"))->toOthers();
+
 
         return redirect()->route('messages.index', ['recipientId' => $request->recipient_id])->with('success', 'Сообщение отправлено!');
     }
