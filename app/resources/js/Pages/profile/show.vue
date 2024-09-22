@@ -1,15 +1,11 @@
 <template>
     <DefaultLayout>
         <div class="container mt-5">
-            <h1 class="text-center mb-4">Мой профиль</h1>
-            <p>Ваш профиль будет виден другим пользователям, пожалуйста, учтите это при его заполнении.</p>
+            <h1 class="text-center mb-4">Профиль пользователя</h1>
             <div class="card">
-                <div v-if="success" class="alert alert-success" role="alert">
-                    {{ success }}
-                </div>
                 <div class="card-body">
-                    <h2 class="card-title">Имя: {{ $page.props.user.name }}</h2>
-                    <p class="card-text"><strong>Биография:</strong> {{ $page.props.profile.bio }}</p>
+                    <h2 class="card-title">Имя: {{ $page.props.profiles_user.name }}</h2>
+                    <p class="card-text"><strong>Биография:</strong> {{ $page.props.profile.bio}}</p>
                     <p class="card-text"><strong>Пол:</strong> {{ $page.props.profile.gender }}</p>
                     <p class="card-text"><strong>Дата рождения:</strong> {{ formattedBirthdate }}</p>
                     <p class="card-text"><strong>Местоположение:</strong> {{ $page.props.profile.location }}</p>
@@ -27,25 +23,14 @@
                             </div>
                         </div>
                         <div v-else class="alert alert-warning">
-                            Пожалуйста, добавьте фотографии профиля. Так вы быстрее найдёте свой мэтч.
+                            Фотографии отсутствуют.
                         </div>
                     </div>
+
                     <div class="mt-4">
-                        <h3>Статистика профиля за последнюю неделю:</h3>
-                        <p><strong>Лайков:</strong> {{ $page.props.profile.likes }}</p>
-                        <p><strong>Просмотров:</strong> {{ $page.props.profile.views }}</p>
+                        <button @click="likeProfile" class="btn btn-primary me-2">Лайк</button>
+                        <button @click="goToChat" class="btn btn-secondary">Написать сообщение</button>
                     </div>
-
-                    <div class="text-center mt-4">
-                        <button @click="editProfile" class="btn btn-primary">Редактировать профиль</button>
-                    </div>
-
-                    <div class="text-center mt-4">
-                        <button @click="goToSearch" class="btn btn-secondary me-2">Поиск пары</button>
-                        <button @click="goToChat" class="btn btn-info">Сообщения</button>
-                    </div>
-
-
                 </div>
             </div>
         </div>
@@ -64,27 +49,34 @@ export default {
     },
     props: {
         profile: Object,
+        profiles_user: Object,
         success: String
     },
     setup(props) {
-        const editProfile = () => {
-            Inertia.get(route('profile.edit'));
-        };
-
-        const formattedBirthdate = computed(() => {
+        function formatBirthdate() {
             const date = new Date(props.profile.birthdate);
             return date.toLocaleDateString('ru-RU', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',
             });
-        });
-
-        function goToChat() {
-            Inertia.get(route('messages.index'));
         }
 
-        return { editProfile, formattedBirthdate, goToChat};
+        const formattedBirthdate = computed(formatBirthdate);
+        function likeProfile() {
+
+        }
+
+        function goToChat() {
+            // Логика для перехода в чат
+            Inertia.get(route('messages.fetchMessages', props.profiles_user.id));
+        }
+
+        return {
+            formattedBirthdate,
+            likeProfile,
+            goToChat,
+        };
     }
 }
 </script>

@@ -24,6 +24,17 @@ class ProfileController extends Controller
         ]);
     }
 
+    public function show($user_id)
+    {
+        $user = User::findOrFail($user_id);
+        $profile = $user->profile()->with('photos')->firstOrFail();
+
+        return Inertia::render('profile/show', [
+            'profile' => $profile,
+            'profiles_user' => $user,
+        ]);
+    }
+
     public function edit()
     {
         $user = auth()->user();
