@@ -11,6 +11,9 @@
                             <Link :href="route('home')" class="nav-link text-white">Главная</Link>
                         </li>
                         <li class="nav-item">
+                            <Link :href="route('search-pair')" class="nav-link text-white">Поиск пары</Link>
+                        </li>
+                        <li class="nav-item">
                             <Link :href="route('about')" class="nav-link text-white">О нас</Link>
                         </li>
                         <li class="nav-item">

@@ -83,8 +83,11 @@ export default {
         function goToChat() {
             Inertia.get(route('messages.index'));
         }
+        function goToSearch() {
+            Inertia.get(route('search-pair'));
+        }
 
-        return { editProfile, formattedBirthdate, goToChat};
+        return { editProfile, formattedBirthdate, goToChat, goToSearch};
     }
 }
 </script>
