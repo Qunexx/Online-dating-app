@@ -50,7 +50,7 @@ class MessageController extends Controller
         $message = $service->createMessage($request);
         $user = auth()->user();
         broadcast(new NewMessage($message, $request->recipient_id))->toOthers();
-        $notificationService->createNotification($request->recipient_id, "Новое сообщение от " . $user->name);
+        $notificationService->createNotification($request->recipient_id, $user->id, "Новое сообщение от " . $user->name);
 
         return redirect()->route('messages.index', ['recipientId' => $request->recipient_id])->with('success', 'Сообщение отправлено!');
     }

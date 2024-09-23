@@ -33,6 +33,7 @@ class NewNotification implements ShouldBroadcastNow
         return [
             'message' => $this->notification->message,
             'user_id' => $this->notification->user_id,
+            'from_user_id' => $this->notification->from_user_id,
         ];
     }
 
