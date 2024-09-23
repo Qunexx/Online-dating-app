@@ -27,7 +27,7 @@ class LoginController extends Controller
         ]);
 
         if (auth()->attempt($request->only('email', 'password'))) {
-            return redirect()->intended(route('home'))->with('success','Вы успешно авторизовались');
+            return redirect()->intended(route('profile.index'))->with('success','Вы успешно авторизовались');
         }
 
 
@@ -40,6 +40,6 @@ class LoginController extends Controller
     public function logout() : RedirectResponse
     {
         auth()->logout();
-        return redirect('/login');
+        return redirect('/login')->with('success','Вы успешно вышли из аккаунта');
     }
 }
