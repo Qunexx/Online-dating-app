@@ -95,7 +95,6 @@ export default {
                             this.scrollPosition = this.$refs.chatBox.scrollTop;
                             localStorage.setItem(`scrollPosition_${this.selectedRecipient}`, this.scrollPosition);
                         }
-                        const isCurrentUserSender = e.sender !== this.current_user_id;
                         this.messages.push({
                             content: e.message,
                             sender: {
