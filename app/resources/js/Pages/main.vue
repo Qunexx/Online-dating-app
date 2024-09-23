@@ -18,14 +18,20 @@
                 <div class="col-md-6">
                     <h2 class="mb-4">Почему выбирают нас?</h2>
                     <ul class="list-unstyled">
-                        <li class="mb-2"><i class="fas fa-check text-success mr-2"></i>Более 10 000 активных пользователей</li>
                         <li class="mb-2"><i class="fas fa-check text-success mr-2"></i>Безопасность и конфиденциальность</li>
                         <li class="mb-2"><i class="fas fa-check text-success mr-2"></i>Простой и удобный интерфейс</li>
                         <li class="mb-2"><i class="fas fa-check text-success mr-2"></i>Поддержка 24/7</li>
+                        <li class="mb-2"><i class="fas fa-check text-success mr-2"></i>Уникальные алгоритмы подбора пар</li>
+                        <li class="mb-2"><i class="fas fa-check text-success mr-2"></i>Большой выбор анкет</li>
+                        <li class="mb-2"><i class="fas fa-check text-success mr-2"></i>Регулярные обновления и улучшения</li>
+                        <li class="mb-2"><i class="fas fa-check text-success mr-2"></i>Положительные отзывы от пользователей</li>
+                        <li class="mb-2"><i class="fas fa-check text-success mr-2"></i>Бесплатный доступ к базовым функциям</li>
                     </ul>
                 </div>
                 <div class="col-md-6">
+                    <Link :href="redirectLink">
                     <img :src="imagePath" alt="Знакомства" class="img-fluid rounded shadow">
+                    </Link>
                 </div>
             </div>
         </div>
