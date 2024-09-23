@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\MainController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PairSearchingController;
@@ -11,9 +12,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Middleware\AuthMiddleware;
 
-Route::get('/', function () {
-    return Inertia::render('main');
-})->name('home');
+Route::get('/',[MainController::class, 'index'])->name('home');
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login.index');
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');
