@@ -90,18 +90,20 @@ export default {
 
                 window.Echo.private(`chat.3`)
                     .listen(".new-message", (e) => {
+                        const senderName = this.users.find(user => user.id === e.sender);
                         const receiverName = this.users.find(user => user.id === e.receiver);
                         if (this.$refs.chatBox) {
                             this.scrollPosition = this.$refs.chatBox.scrollTop;
                             localStorage.setItem(`scrollPosition_${this.selectedRecipient}`, this.scrollPosition);
                         }
+                        const isCurrentUserSender = e.sender !== this.current_user_id;
                         this.messages.push({
                             content: e.message,
                             sender: {
-                                name: receiverName.name
+                                name: isCurrentUserSender ? senderName.name : receiverName.name
                             },
                             receiver: {
-                                name: receiverName.name
+                                name: isCurrentUserSender ? receiverName.name : senderName.name
                             }
                         });
                         this.$nextTick(() => {
