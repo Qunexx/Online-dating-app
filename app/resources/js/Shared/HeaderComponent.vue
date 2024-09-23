@@ -56,13 +56,21 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown">
                             <li v-if="notifications.length === 0" class="dropdown-item">Нет уведомлений</li>
-                            <li v-for="notification in notifications" :key="notification.id" class="notification-item">
+                            <li v-for="(notification, index) in notifications" :key="notification.id" class="notification-item">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <span class="notification-message">{{ notification.message }}</span>
+                                    <div v-if="notification.from_user_id !== null">
+                                        <Link :href="route('messages.fetchMessages', { recipient: notification.from_user_id })">
+                                            <span class="notification-message">{{ notification.message }}</span>
+                                        </Link>
+                                    </div>
+                                    <div v-else>
+                                        <span class="notification-message">{{ notification.message }}</span>
+                                    </div>
                                     <button @click.stop.prevent="hideNotification(notification.id)" class="btn btn-link text-muted">
                                         Пометить прочитанным
                                     </button>
                                 </div>
+                                <hr v-if="index < notifications.length - 1" class="dropdown-divider">
                             </li>
                         </ul>
                     </div>
@@ -115,6 +123,7 @@ export default {
                     notifications.value.push({
                         id: e.id,
                         message: e.message,
+                        from_user_id: e.from_user_id,
                     });
                     unreadNotificationsCount.value++;
                 });
