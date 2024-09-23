@@ -47,6 +47,7 @@ import { computed, ref } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
 import DefaultLayout from '../Shared/DefaultLayout.vue';
 import { route } from "ziggy-js";
+import axios from "axios";
 
 export default {
     components: {
@@ -93,6 +94,10 @@ export default {
         }
         async function sendMessage() {
             try {
+                const response = await axios.post('/messages', {
+                    recipient_id: props.profiles_user.id,
+                    message: "Ты мне понравился(ась) ⚡",
+                });
                 Inertia.visit(route('messages.fetchMessages', props.profiles_user.id));
                 showMessageForm.value = false;
             } catch (error) {
