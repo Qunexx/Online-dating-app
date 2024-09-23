@@ -35,6 +35,7 @@ class NewMessage implements ShouldBroadcastNow
         $this->message = $message->content;
         $this->senderId = $message->sender_id;
         $this->recipientId = $message->receiver_id;
+        $this->created_at = $message->created_at;
     }
 
 
@@ -68,7 +69,8 @@ class NewMessage implements ShouldBroadcastNow
         return [
             'message' => $this->message, // Текст сообщения
             'sender' => $this->senderId, // ID отправителя
-            'receiver' => $this->recipientId, // ID получателя
+            'receiver' => $this->recipientId,
+            'created_at' => $this->created_at,// ID получателя
         ];
     }
 

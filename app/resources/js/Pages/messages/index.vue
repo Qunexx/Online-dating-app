@@ -32,7 +32,14 @@
 
                         <div class="card-body" ref="chatBox" style="height: 300px; overflow-y: scroll;" @scroll="handleScroll">
                             <div v-for="message in messages" :key="message.id" class="message">
-                                <strong>{{ message.sender.name }}:</strong> {{ message.content }}
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <strong>{{ message.sender.name }}:</strong> {{ message.content }}
+                                    </div>
+                                    <div class="message-date">
+                                        {{ formatDate(message.created_at) }}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -164,6 +171,14 @@ export default {
             } catch (error) {
                 console.error('Error sending message:', error);
             }
+        },
+        formatDate(date) {
+            const dateObj = new Date(date);
+            const timeOptions = { hour: '2-digit', minute: '2-digit' };
+            const dateOptions = { day: '2-digit', month: '2-digit', year: '2-digit' };
+            const timeString = dateObj.toLocaleTimeString('ru-RU', timeOptions);
+            const dateString = dateObj.toLocaleDateString('ru-RU', dateOptions);
+            return `${timeString} ${dateString}`;
         },
     },
 };
