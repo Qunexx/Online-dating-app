@@ -31,6 +31,9 @@
                         <button @click="likeProfile" class="btn btn-primary me-2">Лайк</button>
                         <button @click="goToChat" class="btn btn-secondary">Написать сообщение</button>
                     </div>
+                    <div v-if="successMessage" class="alert alert-success mt-3">
+                        {{ successMessage }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -38,10 +41,11 @@
 </template>
 
 <script>
-import { computed } from 'vue';
+import {computed, ref} from 'vue';
 import { Inertia } from '@inertiajs/inertia';
 import DefaultLayout from '../../Shared/DefaultLayout.vue';
 import { route } from "ziggy-js";
+import axios from "axios";
 
 export default {
     components: {
@@ -50,9 +54,10 @@ export default {
     props: {
         profile: Object,
         profiles_user: Object,
-        success: String
+        success: String,
     },
     setup(props) {
+        const successMessage = ref('');
         function formatBirthdate() {
             const date = new Date(props.profile.birthdate);
             return date.toLocaleDateString('ru-RU', {
@@ -63,12 +68,16 @@ export default {
         }
 
         const formattedBirthdate = computed(formatBirthdate);
-        function likeProfile() {
-
+        async function likeProfile() {
+            try {
+                await axios.post(`/profiles/${props.profile.id}/like`, {});
+                successMessage.value = 'Лайк успешно отправлен! Начните общение первым! (Нажмите написать сообщение)';
+            } catch (error) {
+                console.error('Ошибка при отправке лайка:', error);
+            }
         }
 
         function goToChat() {
-            // Логика для перехода в чат
             Inertia.get(route('messages.fetchMessages', props.profiles_user.id));
         }
 
@@ -76,6 +85,7 @@ export default {
             formattedBirthdate,
             likeProfile,
             goToChat,
+            successMessage
         };
     }
 }
