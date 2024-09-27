@@ -29,18 +29,28 @@
                                     <input v-model="password_confirmation" type="password" class="form-control" id="password_confirmation" placeholder="Подтвердите пароль" required>
                                     <div v-if="passwordMismatch" class="text-danger">Пароли не совпадают.</div>
                                 </div>
-                                <button type="submit" class="btn btn-primary btn-block">Зарегистрироваться</button>
+                                <div class="d-flex justify-content-center">
+                                <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+                                </div>
                             </form>
+
                         </div>
+                    </div>
+                </div>
+                <div class="row justify-content-center mt-3">
+                    <div class="col-md-6 text-center">
+                        <p><Link :href="route('login.index')">Или если у вас уже есть аккаунт, авторизуйтесь</Link></p>
                     </div>
                 </div>
             </div>
         </div>
+
     </DefaultLayout>
 </template>
 
 <script>
 import DefaultLayout from '../Shared/DefaultLayout.vue';
+import {route} from "ziggy-js";
 
 export default {
         components: {
@@ -57,6 +67,7 @@ export default {
             };
         },
         methods: {
+            route,
             submit() {
                 this.errors = {};
                 if (!this.name) {
