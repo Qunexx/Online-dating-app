@@ -73,8 +73,8 @@ export default {
         const formattedBirthdate = computed(formatBirthdate);
         async function likeProfile() {
             try {
-                await Inertia.post(route('profiles.like', props.profile.id), {}, { preserveState: true });
-                successMessage.value = 'Лайк успешно отправлен! Начните общение первым! (Нажмите отправить сообщение) Либо если вы не желаете писать в первую очередь, нажимите продолжить поиск';
+               await axios.post(`/profiles/${props.profile.id}/like`, {});
+                successMessage.value = 'Лайк успешно отправлен! Начните общение первым! (Нажмите отправить сообщение) Либо если вы не желаете писать в первую очередь, нажмите продолжить поиск, пользователь в любом случае будет уведомлён о вашем лайке';
                 showMessageForm.value = true;
             } catch (error) {
                 console.error('Ошибка при отправке лайка:', error);

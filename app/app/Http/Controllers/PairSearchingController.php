@@ -1,8 +1,10 @@
 <?php
 namespace App\Http\Controllers;
 
+    use App\Http\Services\NotificationService;
     use App\Models\Like;
     use App\Models\Profile;
+    use App\Models\User;
     use Illuminate\Http\Request;
     use Inertia\Inertia;
 
@@ -36,12 +38,17 @@ class PairSearchingController extends Controller
             ]);
         }
     }
-    public function like(Profile $profile)
+    public function like(Profile $profile, NotificationService $service, User $user)
     {
         auth()->user()->likes()->create([
             'profile_id' => $profile->id,
             'liked' => true,
         ]);
+
+        $liked_user_id = $profile->getUserId();
+        $user_id = auth()->id();
+        $user_name = $user->getUserName($user_id);
+        $service->createNotification($liked_user_id, auth()->id(), "Вас лайкнул " . $user_name . ". Если у вас взаимная симпатия, то обязательно напишите ему/ей об этом, либо лайкните в ответ.");
 
         return Inertia::render('searchPair', [
             'profile' => $profile->with('photos'),

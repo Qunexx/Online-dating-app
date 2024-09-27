@@ -30,4 +30,10 @@ class Profile extends Model
     {
         return $this->hasMany(Like::class);
     }
+
+    public function getUserId()
+    {
+        return $this->user_id;
+    }
+
 }
