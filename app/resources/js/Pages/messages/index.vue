@@ -21,7 +21,7 @@
                                 <strong>Чат с пользователем:</strong> {{ selectedRecipientName }}
                             </div>
                             <div>
-                                <a :href="`/profile/${selectedRecipient}`" class="btn btn-link">Перейти в профиль</a>
+                                <Link :href="route('profile.show',selectedRecipient)" class="btn btn-link">Перейти в профиль</Link>
                             </div>
                         </div>
                         <div v-else class="card-header">
@@ -60,6 +60,8 @@ import Pusher from 'pusher-js';
 import Echo from 'laravel-echo';
 import DefaultLayout from "../../Shared/DefaultLayout.vue";
 import axios from 'axios';
+import {route} from "ziggy-js";
+
 
 export default {
     components: {DefaultLayout},
@@ -84,6 +86,7 @@ export default {
         this.restoreSelectedRecipientName();
     },
     methods: {
+        route,
         initializePusher() {
             window.Pusher = Pusher;
             window.Echo = new Echo({
