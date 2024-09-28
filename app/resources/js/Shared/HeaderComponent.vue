@@ -105,8 +105,12 @@ export default {
         const notifications = ref([]);
         const authorizedUserId = ref(null);
         const unreadNotificationsCount = ref(0);
+        const userId = authorizedUserId.value;
 
         const initializePusher = () => {
+            if(userId == null){
+                return
+            }
             window.Pusher = Pusher;
             window.Echo = new Echo({
                 broadcaster: 'pusher',
@@ -116,7 +120,6 @@ export default {
             });
             Pusher.logToConsole = true;
 
-            const userId = authorizedUserId.value;
 
             window.Echo.private(`notifications.${userId}`)
                 .listen(".new-notification", (e) => {
@@ -132,8 +135,8 @@ export default {
         const fetchNotifications = async () => {
             try {
                 const response = await axios.get('/notifications');
-                notifications.value = response.data.notifications;
-                authorizedUserId.value = response.data.user.id;
+                notifications.value = response.data && response.data.notifications ? response.data.notifications : [];
+                authorizedUserId.value = response.data.user ? response.data.user.id : null;
                 unreadNotificationsCount.value = notifications.value.length;
             } catch (error) {
                 console.error('Error', error);
