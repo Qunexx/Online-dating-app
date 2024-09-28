@@ -17,6 +17,7 @@
         "@inertiajs/inertia": "^0.11.1",
         "@inertiajs/inertia-vue3": "^0.6.0",
         "bootstrap": "^5.3.3",
+        "emoji-picker-element": "^1.22.8",
         "event-source-polyfill": "^1.0.31",
         "laravel-echo": "^1.16.1",
         "pusher-js": "^8.4.0-rc2",
