@@ -21,6 +21,11 @@ Route::get('/logout', [LoginController::class, 'logout'])->name('logout.post');
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register.index');
 Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
 
+Route::get('/restore-password', [\App\Http\Controllers\Auth\RestorePasswordController::class, 'showRestoreForm'])->name('restore.index');
+Route::post('/restore-password', [\App\Http\Controllers\Auth\RestorePasswordController::class, 'sendResetLinkEmail'])->name('restore.post');
+
+Route::get('/reset-password/{token}/{email}', [\App\Http\Controllers\Auth\RestorePasswordController::class, 'showChangePasswordForm'])->name('password.reset');
+Route::post('/reset-password', [\App\Http\Controllers\Auth\RestorePasswordController::class, 'resetPassword'])->name('password.update');
 
 Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index')->middleware(AuthMiddleware::class);
 Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit')->middleware(AuthMiddleware::class);

@@ -27,6 +27,9 @@
                                 <button type="submit" class="btn btn-primary btn-block mb-3">Войти</button>
                             </form>
                             <div class="mt-3 text-center">
+                                <Link :href="route('restore.index')">Забыли пароль?</Link>
+                            </div>
+                            <div class="mt-3 text-center">
                                 <Link :href="route('register.index')">Нет аккаунта? Зарегистрируйтесь</Link>
                             </div>
                         </div>
