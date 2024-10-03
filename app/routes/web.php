@@ -7,7 +7,7 @@ use App\Http\Controllers\MessageController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PairSearchingController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserSettingsController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Middleware\AuthMiddleware;
@@ -31,6 +31,9 @@ Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index
 Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit')->middleware(AuthMiddleware::class);
 Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update')->middleware(AuthMiddleware::class);
 Route::get('/profile/{user_id}', [ProfileController::class, 'show'])->name('profile.show')->middleware(AuthMiddleware::class);
+
+Route::get('/settings', [UserSettingsController::class, 'index'])->name('settings.index')->middleware(AuthMiddleware::class);
+Route::post('/settings/change-password', [UserSettingsController::class, 'changePassword'])->name('settings.changePassword')->middleware(AuthMiddleware::class);
 
 
 Route::get('/messages', [MessageController::class, 'index'])->name('messages.index')->middleware(AuthMiddleware::class);

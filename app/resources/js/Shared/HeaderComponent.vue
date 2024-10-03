@@ -39,6 +39,7 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                             <li><Link class="dropdown-item" :href="route('profile.index')">Профиль</Link></li>
+                            <li><Link class="dropdown-item" :href="route('settings.index')">Настройки</Link></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><Link class="dropdown-item" :href="route('logout.post')">Выход</Link></li>
                         </ul>
