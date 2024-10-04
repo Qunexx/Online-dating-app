@@ -6,6 +6,15 @@
                 <div class="mb-3">
                     <label for="bio" class="form-label">Биография</label>
                     <textarea v-model="form.bio" class="form-control" id="bio"></textarea>
+                    <button type="button" @click="toggleEmojiPicker" class="btn btn-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-emoji-smile" viewBox="0 0 16 16">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                            <path d="M4.285 9.567a.5.5 0 0 1 .683.183A3.5 3.5 0 0 0 8 11.5a3.5 3.5 0 0 0 3.032-1.75.5.5 0 1 1 .866.5A4.5 4.5 0 0 1 8 12.5a4.5 4.5 0 0 1-3.898-2.25.5.5 0 0 1 .183-.683M7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5m4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5"/>
+                        </svg>
+                    </button>
+                    <div v-if="showEmojiPicker" class="emoji-picker-container">
+                        <emoji-picker @emoji-click="onEmojiClick"></emoji-picker>
+                    </div>
                     <span v-if="errors.bio" class="text-danger">{{ errors.bio[0] }}</span>
                 </div>
 
@@ -13,9 +22,9 @@
                     <label for="gender" class="form-label">Пол</label>
                     <select v-model="form.gender" class="form-select" id="gender" required>
                         <option value="">Выберите пол</option>
-                        <option value="male">Мужчина</option>
-                        <option value="female">Женщина</option>
-                        <option value="other">Другой</option>
+                        <option value="Мужчина">Мужчина</option>
+                        <option value="Женщина">Женщина</option>
+                        <option value="Другой">Другой</option>
                     </select>
                     <span v-if="errors.gender" class="text-danger">{{ errors.gender[0] }}</span>
                 </div>
@@ -97,6 +106,7 @@ import { Inertia } from '@inertiajs/inertia';
 import DefaultLayout from '../../Shared/DefaultLayout.vue';
 import { route } from "ziggy-js";
 import { Link } from '@inertiajs/inertia-vue3';
+import 'emoji-picker-element';
 
 export default {
     methods: {route},
@@ -109,6 +119,7 @@ export default {
         success: String
     },
     setup(props) {
+        const showEmojiPicker = ref(false);
         const selectedFiles = ref([]);
         const errors = ref({});
 
@@ -170,8 +181,14 @@ export default {
                 day: 'numeric',
             });
         });
+        const onEmojiClick = (event) => {
+            form.value.bio += event.detail.unicode;
+        };
+        const toggleEmojiPicker= () => {
+            showEmojiPicker.value = !showEmojiPicker.value;
+        };
 
-        return { form, submitProfile, handleFileUpload, formattedBirthdate, errors, selectedFiles, removeFile };
+        return { form, submitProfile, handleFileUpload, formattedBirthdate, errors, selectedFiles, removeFile, onEmojiClick, toggleEmojiPicker, showEmojiPicker };
     }
 }
 </script>
@@ -188,5 +205,10 @@ export default {
 .card-img-top {
     height: 150px;
     object-fit: cover;
+}
+
+.emoji-picker-container {
+    position: absolute;
+    z-index: 1000;
 }
 </style>
