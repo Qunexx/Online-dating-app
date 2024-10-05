@@ -23,6 +23,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'is_banned'
     ];
 
     /**
@@ -79,5 +80,11 @@ class User extends Authenticatable
     {
         $user = auth()->user();
         return $user && $user->role === 'admin';
+    }
+
+    public static function isBanned(): bool
+    {
+        $user = auth()->user();
+        return $user && $user->is_banned === 'true';
     }
 }

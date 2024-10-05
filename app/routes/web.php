@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\MainController;
@@ -27,6 +28,19 @@ Route::post('/restore-password', [\App\Http\Controllers\Auth\RestorePasswordCont
 Route::get('/reset-password/{token}/{email}', [\App\Http\Controllers\Auth\RestorePasswordController::class, 'showChangePasswordForm'])->name('password.reset');
 Route::post('/reset-password', [\App\Http\Controllers\Auth\RestorePasswordController::class, 'resetPassword'])->name('password.update');
 
+Route::get('/about', function () {
+    return Inertia::render('about');
+})->name('about');
+
+
+Route::get('/blog', function () {
+    return Inertia::render('blog');
+})->name('blog');
+
+Route::get('/contact', function () {
+    return Inertia::render('contact');
+});
+
 Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index')->middleware(AuthMiddleware::class);
 Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit')->middleware(AuthMiddleware::class);
 Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update')->middleware(AuthMiddleware::class);
@@ -53,24 +67,12 @@ Route::post('/profiles/{profile}/dislike', [PairSearchingController::class, 'dis
 Route::get('/notifications', [NotificationController::class, 'getNotifications'])->name('notifications')->middleware(AuthMiddleware::class);
 Route::post('/hide-notification/{notificationId}', [NotificationController::class, 'hideNotification'])->middleware(AuthMiddleware::class);
 
-Route::get('/about', function () {
-    return Inertia::render('about');
-})->name('about');
 
-
-Route::get('/blog', function () {
-    return Inertia::render('blog');
-})->name('blog')->middleware(AuthMiddleware::class);
-
-Route::get('/contact', function () {
-    return Inertia::render('contact');
-})->name('contact')->middleware(\App\Http\Middleware\AdminRoleMiddleware::class);
 
 Route::get('/admin', [\App\Http\Controllers\AdminController::class, 'index'])->name('admin.index')->middleware(AuthMiddleware::class)->middleware(\App\Http\Middleware\AdminRoleMiddleware::class);
-
-
-
-
+Route::get('/admin/users/{id}/edit', [\App\Http\Controllers\AdminController::class, 'editUser'])->name('admin.users.edit')->middleware(AuthMiddleware::class)->middleware(\App\Http\Middleware\AdminRoleMiddleware::class);
+Route::post('/admin/user/{id}', [AdminController::class, 'updateUser'])->name('admin.users.update')->middleware(AuthMiddleware::class)->middleware(\App\Http\Middleware\AdminRoleMiddleware::class);
+Route::post('/admin/user/ban/{id}', [AdminController::class, 'banUser'])->name('admin.users.ban')->middleware(AuthMiddleware::class)->middleware(\App\Http\Middleware\AdminRoleMiddleware::class);
 
 
 
