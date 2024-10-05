@@ -1,9 +1,13 @@
 <?php
 
+use App\Http\Controllers\AboutController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\RestorePasswordController;
+use App\Http\Controllers\BanController;
+use App\Http\Controllers\BlogController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\NotificationController;
@@ -31,19 +35,10 @@ Route::post('/restore-password', [RestorePasswordController::class, 'sendResetLi
 Route::get('/reset-password/{token}/{email}', [RestorePasswordController::class, 'showChangePasswordForm'])->name('password.reset');
 Route::post('/reset-password', [RestorePasswordController::class, 'resetPassword'])->name('password.update');
 
-Route::get('/about', function () {
-    return Inertia::render('about');
-})->name('about');
-
-
-Route::get('/blog', function () {
-    return Inertia::render('blog');
-})->name('blog');
-
-Route::get('/contact', function () {
-    return Inertia::render('contact');
-})->name('contact');
-
+Route::get('/about',[AboutController::class, 'index'])->name('about');
+Route::get('/blog',[BlogController::class, 'index'])->name('blog');
+Route::get('/contact',[ContactController::class, 'index'])->name('contact');
+Route::get('/banned',[BanController::class, 'index'])->name('banned');
 
 Route::middleware([AuthMiddleware::class])->group(function () {
     Route::prefix('settings')->group(function () {
@@ -79,9 +74,6 @@ Route::middleware([AuthMiddleware::class])->group(function () {
     });
 });
 
-Route::get('/banned', function () {
-    return Inertia::render('banned');
-})->name('ban.index');
 
 
 Route::prefix('admin')->middleware(AdminRoleMiddleware::class)->group(function () {

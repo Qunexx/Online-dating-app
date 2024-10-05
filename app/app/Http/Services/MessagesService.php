@@ -9,7 +9,7 @@ use Illuminate\Support\Collection;
 
 class MessagesService
 {
-    public function getDialogUsers($user) : Collection //коллекций диалогов пользователя
+    public function getDialogUsers($user): Collection //коллекций диалогов пользователя
     {
         $dialogUsers = Message::where('sender_id', $user->id)
             ->orWhere('receiver_id', $user->id)
@@ -27,12 +27,12 @@ class MessagesService
         return $dialogUsers;
     }
 
-    public function getUserMessages($user, int $recipient_id) : Collection //коллекция сообщений с конкретным пользователем
+    public function getUserMessages($user, int $recipient_id): Collection //коллекция сообщений с конкретным пользователем
     {
-        $messages =  Message::where(function ($query) use ($user,$recipient_id) {
+        $messages = Message::where(function ($query) use ($user, $recipient_id) {
             $query->where('sender_id', $user->id)
                 ->where('receiver_id', $recipient_id);
-        })->orWhere(function ($query) use ($user,$recipient_id) {
+        })->orWhere(function ($query) use ($user, $recipient_id) {
             $query->where('sender_id', $recipient_id)
                 ->where('receiver_id', $user->id);
         })->with('sender')->get();
@@ -40,7 +40,7 @@ class MessagesService
         return $messages;
     }
 
-    public function createMessage(Request $request) : Message //создание сообщения
+    public function createMessage(Request $request): Message //создание сообщения
     {
         return Message::create([
             'content' => $request->message,

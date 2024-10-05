@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Services\AdminService;
 use App\Models\User;
 use http\Client\Response;
 use Illuminate\Http\RedirectResponse;
@@ -10,9 +11,16 @@ use Inertia\Inertia;
 
 class AdminController extends Controller
 {
-    public function index() : \Inertia\Response
+    protected $adminService;
+
+    public function __construct(AdminService $adminService)
     {
-        $users = User::all();
+        $this->adminService = $adminService;
+    }
+
+    public function index(): \Inertia\Response
+    {
+        $users = $this->adminService->getAllUsers();
 
         return Inertia::render('admin/index', [
             'users' => $users,
@@ -20,38 +28,36 @@ class AdminController extends Controller
         ]);
     }
 
-    public function editUser(int $id) : \Inertia\Response
+    public function editUser(int $id): \Inertia\Response
     {
-        $user = User::findOrFail($id);
+        $user = $this->adminService->getUser($id);
 
         return Inertia::render('admin/editUserTab', [
             'user' => $user,
         ]);
     }
 
-    public function updateUser(Request $request,int $id) : RedirectResponse
+    public function updateUser(Request $request, int $id): RedirectResponse
     {
-        $user = User::findOrFail($id);
-
-        $request->validate([
+        $user = $this->adminService->getUser($id);
+        $validated_data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'role' => 'required|in:user,admin',
         ]);
 
-        $user->update($request->all());
+        $result = $this->adminService->updateUser($validated_data, $user);
+        if ($result) {
+            return redirect()->route('admin.index')->with('success', 'Пользователь успешно обновлен.');
+        } else {
+            return redirect()->route('admin.index')->with('error', 'Ошибка при обновлении пользователя.');
+        }
 
-        return redirect()->route('admin.index')->with('success', 'Пользователь успешно обновлен.');
     }
 
-    public function banUser(int $id) : bool
+    public function banUser(int $id): bool
     {
-        $user = User::findOrFail($id);
-
-        $user->is_banned = !$user->is_banned;
-        $user->save();
-
-        $status = $user->is_banned;
+        $status = $this->adminService->banUser($id);
 
         return $status;
     }

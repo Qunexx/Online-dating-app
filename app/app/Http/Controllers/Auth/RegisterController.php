@@ -1,7 +1,9 @@
 <?php
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Services\AuthService;
 use App\Models\Profile;
 use App\Models\User;
 use http\Url;
@@ -14,36 +16,35 @@ use PhpParser\Node\Expr\Cast\Object_;
 
 class RegisterController extends Controller
 {
-    public function showRegistrationForm() : Response | RedirectResponse
+    protected $authService;
+
+    public function __construct(AuthService $authService)
     {
-        if(auth()->check()){
+        $this->authService = $authService;
+    }
+
+    public function showRegistrationForm(): Response|RedirectResponse
+    {
+        if (auth()->check()) {
             return redirect()->intended(route('profile.index'));
         }
         return Inertia::render('register');
     }
 
-    public function register(Request $request) : RedirectResponse
+    public function register(Request $request): RedirectResponse
     {
-        $request->validate([
+        $validated_data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
         ]);
 
-       $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        $result = $this->authService->registerUser($validated_data);
+        if ($result) {
+            return redirect('/login')->with('success', 'Вы успешно зарегистрированы! Пожалуйста авторизуйтесь, чтобы начать пользоваться сайтом');
+        } else {
+            return redirect('/login')->with('error', 'Что-то пошло не так, попробуйте снова');
+        }
 
-        $user->profile()->create([
-            'bio' => '',
-            'gender' => '',
-            'birthdate' => null,
-            'location' => '',
-            'interests' => '',
-        ]);
-
-        return redirect('/login')->with('success', 'Вы успешно зарегистрированы! Пожалуйста авторизуйтесь, чтобы начать пользоваться сайтом');
     }
 }

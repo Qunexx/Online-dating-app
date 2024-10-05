@@ -116,14 +116,13 @@ export default {
 }
 
 .table {
-    width: 100%;
+    width: auto;
     margin-bottom: 1rem;
     color: #212529;
 }
 
-.table th,
 .table td {
-    padding: 0.75rem;
+    padding: 0.3rem;
     vertical-align: top;
     border-top: 1px solid #dee2e6;
     cursor: pointer;

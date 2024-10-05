@@ -16,10 +16,19 @@ use Inertia\Inertia;
 
 class MessageController extends Controller
 {
-    public function index(MessagesService $service) : \Inertia\Response
+    protected $notificationsService;
+    protected $messagesService;
+
+    public function __construct(MessagesService $messagesService, NotificationService $notificationService)
+    {
+        $this->messagesService = $messagesService;
+        $this->notificationsService = $notificationService;
+    }
+
+    public function index(): \Inertia\Response
     {
         $user = auth()->user();
-        $dialogUsers = $service->getDialogUsers($user);
+        $dialogUsers = $this->messagesService->getDialogUsers($user);
         return Inertia::render('messages/index', [
             'initialMessages' => [],
             'users' => $dialogUsers,
@@ -27,11 +36,11 @@ class MessageController extends Controller
         ]);
     }
 
-    public function fetchMessages($recipientId, MessagesService $service) : \Inertia\Response
+    public function fetchMessages(int $recipientId): \Inertia\Response
     {
         $user = auth()->user();
-        $messages = $service->getUserMessages($user, $recipientId);
-        $dialogUsers = $service->getDialogUsers($user);
+        $messages = $this->messagesService->getUserMessages($user, $recipientId);
+        $dialogUsers = $this->messagesService->getDialogUsers($user);
 
         return Inertia::render('messages/index', [
             'initialMessages' => $messages,
@@ -40,17 +49,17 @@ class MessageController extends Controller
         ]);
     }
 
-    public function store(Request $request,  MessagesService $service, NotificationService $notificationService) : RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
         $request->validate([
             'recipient_id' => 'required|exists:users,id',
             'message' => 'required|max:255',
         ]);
 
-        $message = $service->createMessage($request);
+        $message = $this->messagesService->createMessage($request);
         $user = auth()->user();
         broadcast(new NewMessage($message, $request->recipient_id))->toOthers();
-        $notificationService->createNotification($request->recipient_id, $user->id, "Новое сообщение от " . $user->name);
+        $this->notificationsService->createNotification($request->recipient_id, $user->id, "Новое сообщение от " . $user->name);
 
         return redirect()->route('messages.index', ['recipientId' => $request->recipient_id])->with('success', 'Сообщение отправлено!');
     }

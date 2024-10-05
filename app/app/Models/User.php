@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Http\Services\MailService;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -48,6 +49,7 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
     public function profile()
     {
         return $this->hasOne(Profile::class);
@@ -64,7 +66,7 @@ class User extends Authenticatable
         return $this->hasMany(Like::class);
     }
 
-    public function getUserName(int $id) : ?string
+    public function getUserName(int $id): ?string
     {
         $user = self::find($id);
 
@@ -87,4 +89,6 @@ class User extends Authenticatable
         $user = auth()->user();
         return $user && $user->is_banned;
     }
+
+
 }

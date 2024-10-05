@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Services\UserService;
 use App\Models\ProfilePhoto;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
@@ -13,72 +15,59 @@ use App\Models\Profile;
 
 class ProfileController extends Controller
 {
-    public function index() : Response
+    protected $service;
+
+    public function __construct(UserService $service)
     {
-        $user = auth()->user();
-        $profile = $user->getProfile();
+        $this->service = $service;
+    }
+
+    public function index(): \Inertia\Response
+    {
+        $data = $this->service->getMyProfile();
 
         return Inertia::render('profile/index', [
-            'user' => $user,
-            'profile' => $profile,
+            'user' => $data['user'],
+            'profile' => $data['profile'],
         ]);
     }
 
-    public function show($user_id)
+    public function show(int $user_id): \Inertia\Response
     {
-        $user = User::findOrFail($user_id);
-        $profile = $user->profile()->with('photos')->firstOrFail();
+        $data = $this->service->getUserProfile($user_id);
 
         return Inertia::render('profile/show', [
-            'profile' => $profile,
-            'profiles_user' => $user,
+            'profile' => $data['profile'],
+            'profiles_user' => $data['user'],
         ]);
     }
 
-    public function edit()
+    public function edit(): \Inertia\Response
     {
-        $user = auth()->user();
-        $profile = $user->getProfile();
+        $data = $this->service->getMyProfile();
 
         return Inertia::render('profile/edit', [
-            'profile' => $profile,
+            'profile' => $data['profile'],
         ]);
     }
 
-    public function update(Request $request)
+    public function update(Request $request): RedirectResponse
     {
-        $data = $request->validate([
+        $result = $this->service->updateUserProfile($request->validate([
             'bio' => 'nullable|string|max:500',
             'gender' => 'nullable|string',
             'birthdate' => 'nullable|date',
             'location' => 'nullable|string|max:255',
             'interests' => 'nullable|string|max:255',
             'photos.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+            'delete_photos' => 'nullable|json'
+        ]));
 
-        $profile = auth()->user()->getProfile();
-        $profile->update($data);
-        if ($request->has('delete_photos')) {
-            $deletePhotos = json_decode($request->delete_photos, true);
-            foreach ($deletePhotos as $photoId) {
-                $photo = ProfilePhoto::find($photoId);
-                if ($photo) {
-                    \Storage::disk('public')->delete($photo->photo_path);
-                    $photo->delete();
-                }
-            }
+        if ($result) {
+            return redirect()->intended(route('profile.index'))->with('success', 'Профиль успешно обновлён');
+        } else {
+            return redirect()->intended(route('profile.index'))->with('error', 'Возникла ошибка при обновлении профиля ');
         }
-        if ($request->hasFile('photos')) {
-            foreach ($request->file('photos') as $file) {
-                $path = $file->store('profile_photos', 'public');
-
-                ProfilePhoto::create([
-                    'profile_id' => $profile->id,
-                    'photo_path' => $path,
-                ]);
-            }
-        }
-        return redirect()->intended(route('profile.index'))->with('success', 'Профиль успешно обновлён');
     }
 
 }

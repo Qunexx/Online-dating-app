@@ -16,7 +16,7 @@ use Inertia\Inertia;
 
 class MainController extends Controller
 {
-    public function index() : \Inertia\Response
+    public function index(): \Inertia\Response
     {
         $user = auth()->user();
         $user ? $user : null;

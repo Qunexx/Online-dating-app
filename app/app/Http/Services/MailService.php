@@ -7,7 +7,7 @@ use App\Mail\CustomMail;
 
 class MailService
 {
-    public function sendResetPasswordEmail($user, $token)
+    public function sendResetPasswordEmail($user, $token): bool
     {
         $resetUrl = url(route('password.reset', [
             'token' => $token,
@@ -15,11 +15,13 @@ class MailService
         ], false));
 
         $this->sendEmail($user->email, 'Сброс пароля', 'forgot-password', ['url' => $resetUrl]);
+        return true;
     }
 
-    public function sendCustomEmail($to, $subject, $view, $data = [])
+    public function sendCustomEmail($to, $subject, $view, $data = []): bool
     {
         $this->sendEmail($to, $subject, 'email', $data);
+        return true;
     }
 
     protected function sendEmail($to, $subject, $view, $data = [])
