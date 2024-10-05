@@ -64,7 +64,9 @@ Route::get('/blog', function () {
 
 Route::get('/contact', function () {
     return Inertia::render('contact');
-})->name('contact');
+})->name('contact')->middleware(\App\Http\Middleware\AdminRoleMiddleware::class);
+
+Route::get('/admin', [\App\Http\Controllers\AdminController::class, 'index'])->name('admin.index')->middleware(AuthMiddleware::class)->middleware(\App\Http\Middleware\AdminRoleMiddleware::class);
 
 
 

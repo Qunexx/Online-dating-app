@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -62,7 +63,7 @@ class User extends Authenticatable
         return $this->hasMany(Like::class);
     }
 
-    public function getUserName($id) : ?string
+    public function getUserName(int $id) : ?string
     {
         $user = self::find($id);
 
@@ -72,5 +73,11 @@ class User extends Authenticatable
     public function sendPasswordResetNotification($token)
     {
         app(MailService::class)->sendResetPasswordEmail($this, $token);
+    }
+
+    public static function isAdmin(): bool
+    {
+        $user = auth()->user();
+        return $user && $user->role === 'admin';
     }
 }
