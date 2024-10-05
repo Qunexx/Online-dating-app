@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -10,8 +11,11 @@ use Inertia\Response;
 
 class LoginController extends Controller
 {
-    public function showLoginForm() : Response
+    public function showLoginForm() : Response | RedirectResponse
     {
+        if(auth()->check()){
+            return redirect()->intended(route('profile.index'));
+        }
         return Inertia::render('login', [
             'error' => session()->get('error'),
             'success' => session()->get('success'),
@@ -19,15 +23,25 @@ class LoginController extends Controller
 
     }
 
-    public function login(Request $request)
+    public function login(Request $request) : Response | RedirectResponse
     {
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        if (auth()->attempt($request->only('email', 'password'))) {
-            return redirect()->intended(route('profile.index'))->with('success','Вы успешно авторизовались');
+        $credentials = $request->only('email', 'password');
+        if ($request->remember) {
+            $remember = true;
+        } else{
+            $remember = false;
+        }
+        if (auth()->attempt($credentials, $remember)) {
+            if (auth()->viaRemember()) {
+                return redirect()->intended(route('profile.index'))->with('success', 'Вы успешно авторизовались.".');
+            } else {
+                return redirect()->intended(route('profile.index'))->with('success', 'Вы успешно авторизовались.');
+            }
         }
 
 
@@ -37,9 +51,12 @@ class LoginController extends Controller
             ],
         ]);
     }
-    public function logout() : RedirectResponse
+
+    public function logout(Request $request): RedirectResponse
     {
         auth()->logout();
-        return redirect('/login')->with('success','Вы успешно вышли из аккаунта');
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/login')->with('success', 'Вы успешно вышли из аккаунта');
     }
 }

@@ -14,8 +14,11 @@ use PhpParser\Node\Expr\Cast\Object_;
 
 class RegisterController extends Controller
 {
-    public function showRegistrationForm() : Response
+    public function showRegistrationForm() : Response | RedirectResponse
     {
+        if(auth()->check()){
+            return redirect()->intended(route('profile.index'));
+        }
         return Inertia::render('register');
     }
 

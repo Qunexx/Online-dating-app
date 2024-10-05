@@ -24,6 +24,10 @@
                                     <label for="password">Пароль</label>
                                     <input v-model="password" type="password" class="form-control" id="password" placeholder="Введите пароль" required>
                                 </div>
+                                <div class="form-group mb-3">
+                                    <label for="remember">Запомнить меня</label>
+                                    <input v-model="remember" type="checkbox" class="ms-2 form-check-input" id="remember">
+                                </div>
                                 <button type="submit" class="btn btn-primary btn-block mb-3">Войти</button>
                             </form>
                             <div class="mt-3 text-center">
@@ -59,12 +63,13 @@ export default {
         return {
             email: '',
             password: '',
+            remember: '',
         };
     },
     methods: {
         route,
         submit() {
-            this.$inertia.post('/login', { email: this.email, password: this.password });
+            this.$inertia.post('/login', { email: this.email, password: this.password, remember: this.remember });
         },
     },
 }
