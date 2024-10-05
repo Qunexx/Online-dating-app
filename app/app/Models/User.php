@@ -85,6 +85,6 @@ class User extends Authenticatable
     public static function isBanned(): bool
     {
         $user = auth()->user();
-        return $user && $user->is_banned === 'true';
+        return $user && $user->is_banned;
     }
 }
