@@ -125,7 +125,8 @@ export default {
                             },
                             receiver: {
                                 name: isCurrentUserSender ? receiverName.name : senderName.name
-                            }
+                            },
+                            created_at: e.created_at,
                         });
                         this.$nextTick(() => {
                             if (this.$refs.chatBox) {

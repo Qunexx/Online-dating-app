@@ -22,6 +22,7 @@ class NewMessage implements ShouldBroadcastNow
     public $message;
     public $senderId;
     public $recipientId;
+    public $created_at;
 
 
     /**
@@ -67,10 +68,10 @@ class NewMessage implements ShouldBroadcastNow
     public function broadcastWith()
     {
         return [
-            'message' => $this->message, // Текст сообщения
-            'sender' => $this->senderId, // ID отправителя
+            'message' => $this->message,
+            'sender' => $this->senderId,
             'receiver' => $this->recipientId,
-            'created_at' => $this->created_at,// ID получателя
+            'created_at' => $this->created_at,
         ];
     }
 
