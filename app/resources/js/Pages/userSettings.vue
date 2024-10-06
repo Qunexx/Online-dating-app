@@ -48,6 +48,9 @@ export default {
     components: {
         DefaultLayout
     },
+    props: {
+        errors: Object,
+    },
     data() {
         return {
             current_password: '',

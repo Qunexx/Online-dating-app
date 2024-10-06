@@ -14,11 +14,11 @@ class UserService
     public function changePassword($request): bool
     {
         $user = auth()->user();
-        if (!Hash::check($request->current_password, $user->password)) {
+        if (!Hash::check($request['current_password'], $user->password)) {
             return false;
         }
         $user->forceFill([
-            'password' => Hash::make($request->new_password)
+            'password' => Hash::make($request['new_password'])
         ])->save();
 
         auth()->logout();
