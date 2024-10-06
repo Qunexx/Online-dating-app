@@ -4,25 +4,35 @@
             <h1 class="text-center mb-5">Контакты</h1>
             <div class="row">
                 <div class="col-md-6">
+                    <div v-if="successMessage" class="alert alert-success">
+                        {{ successMessage }}
+                    </div>
+                    <div v-if="errorMessage" class="alert alert-success">
+                        {{ errorMessage }}
+                    </div>
                     <h2 class="mb-4">Свяжитесь с нами</h2>
-                    <p>Если у вас есть вопросы, предложения или пожелания, свяжитесь с нами по адресу <a href="mailto:СайтЗнакомств@сайтзнакомств.ру">СайтЗнакомств@сайтзнакомств.ру</a>.</p>
+                    <p>Если у вас есть вопросы, предложения или пожелания, свяжитесь с нами по адресу <a
+                        href="mailto:СайтЗнакомств@сайтзнакомств.ру">СайтЗнакомств@сайтзнакомств.ру</a>.</p>
                     <p>Мы всегда рады помочь и ответить на ваши вопросы.</p>
                     <h2 class="mb-4">Форма для вопросов и предложений</h2>
+                    <p>В форме укажите email, к которому вы имеете доступ, потому что через него с вами свяжутся.</p>
                     <form @submit.prevent="submitForm">
                         <div class="form-group">
                             <label for="name">Ваше имя</label>
-                            <input type="text" class="form-control" id="name" v-model="form.name" required>
+                            <input v-model="name" type="text" class="form-control" id="name"  required>
                         </div>
                         <div class="form-group">
                             <label for="email">Ваш email</label>
-                            <input type="email" class="form-control" id="email" v-model="form.email" required>
+                            <input v-model="email"  type="email" class="form-control" id="email" required>
                         </div>
                         <div class="form-group">
                             <label for="message">Ваше сообщение</label>
-                            <textarea class="form-control" id="message" rows="5" v-model="form.message" required></textarea>
+                            <textarea class="form-control" id="message" rows="5" v-model="message"
+                                      required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary">Отправить</button>
+                        <button type="submit" class="btn btn-primary mb-3">Отправить</button>
                     </form>
+
                 </div>
                 <div class="col-md-6">
                     <img :src="imagePath" alt="Контакты" class="img-fluid rounded shadow">
@@ -43,11 +53,11 @@ export default {
     props: {},
     data() {
         return {
-            form: {
-                name: '',
-                email: '',
-                message: ''
-            }
+            name: '',
+            email: '',
+            message: '',
+            successMessage: '',
+            errorMessage: '',
         };
     },
     computed: {
@@ -58,19 +68,28 @@ export default {
     methods: {
         async submitForm() {
             try {
-                alert('Ваше сообщение успешно отправлено!');
-                this.form.name = '';
-                this.form.email = '';
-                this.form.message = '';
+                const response = await axios.post('/contact', {
+                        name: this.name,
+                        email: this.email,
+                        message: this.message
+                    }
+                );
+                this.successMessage = response.data.success;
+                this.name = '';
+                this.email = '';
+                this.message = '';
+                this.errorMessage = null;
             } catch (error) {
                 console.error('Ошибка отправки сообщения:', error);
-                alert('Произошла ошибка при отправке сообщения. Пожалуйста, попробуйте еще раз.');
+                this.errorMessage = error.response.data.error;
+                this.successMessage = null;
             }
         },
         asset(path) {
             return window.location.origin + '/' + path;
         }
-    }}
+    },
+}
 </script>
 
 <style scoped>
