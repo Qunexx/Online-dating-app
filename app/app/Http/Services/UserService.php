@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Hash;
 
 class UserService
 {
-    public function changePassword($request): bool
+    public function changePassword(array $request): bool
     {
         $user = auth()->user();
         if (!Hash::check($request['current_password'], $user->password)) {
