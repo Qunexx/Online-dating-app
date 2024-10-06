@@ -15,15 +15,15 @@
                     <h2 class="mb-4">Форма для вопросов и предложений</h2>
                     <form @submit.prevent="submitForm">
                         <div class="form-group">
-                            <label for="name">Ваше имя</label>
+                            <label for="name">Ваше имя на сайте</label>
                             <input type="text" class="form-control" id="name" v-model="name" required>
                         </div>
                         <div class="form-group">
-                            <label for="email">Ваш email</label>
+                            <label for="email">Ваш email, привязанный к аккаунту</label>
                             <input type="email" class="form-control" id="email" v-model="email" required>
                         </div>
                         <div class="form-group">
-                            <label for="message">Ваше сообщение</label>
+                            <label for="message">Ваше сообщение или вопрос</label>
                             <textarea class="form-control" id="message" rows="5" v-model="message" required></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary mb-5">Отправить</button>
