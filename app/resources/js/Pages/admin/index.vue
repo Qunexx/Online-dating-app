@@ -4,19 +4,22 @@
             <h1 class="text-center mb-4">Административная панель</h1>
             <ul class="nav nav-tabs">
                 <li class="nav-item">
-                    <a class="nav-link" :class="{ active: activeTab === 'users' }" @click="setActiveTab('users')">Общая статистика</a>
+                    <a class="nav-link" :class="{ active: activeTab === 'stats' }" @click="setActiveTab('users')">Общая статистика</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" :class="{ active: activeTab === 'users' }" @click="setActiveTab('users')">Пользователи</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" :class="{ active: activeTab === 'users' }" @click="setActiveTab('users')">Жалобы</a>
+                    <a class="nav-link" :class="{ active: activeTab === 'questions' }" @click="setActiveTab('questions')">Вопросы</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" :class="{ active: activeTab === 'users' }" @click="setActiveTab('users')">Активные сессии</a>
+                    <a class="nav-link" :class="{ active: activeTab === 'reports' }" @click="setActiveTab('users')">Жалобы</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" :class="{ active: activeTab === 'users' }" @click="setActiveTab('users')">Последние действия в админке</a>
+                    <a class="nav-link" :class="{ active: activeTab === 'sessions' }" @click="setActiveTab('users')">Активные сессии</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" :class="{ active: activeTab === 'admin_activity' }" @click="setActiveTab('users')">Последние действия в админке</a>
                 </li>
             </ul>
             <div class="tab-content mt-4">
@@ -25,6 +28,9 @@
                 </div>
                 <div v-if="activeTab === 'users'" class="tab-pane active">
                     <UsersTab :users="users" @edit-user="editUser" @ban-user="banUser" @show-user-profile="showUserProfile" />
+                </div>
+                <div v-if="activeTab === 'questions'" class="tab-pane active">
+                    <QuestionsTab :questions="questions" @process-question="processQuestion"/>
                 </div>
             </div>
         </div>
@@ -38,14 +44,17 @@ import DefaultLayout from '../../Shared/DefaultLayout.vue';
 import UsersTab from './usersTab.vue';
 import {route} from "ziggy-js";
 import axios from "axios";
+import QuestionsTab from "./questionsTab.vue";
 
 export default {
     components: {
+        QuestionsTab,
         DefaultLayout,
         UsersTab,
     },
     props: {
         users: Array,
+        questions: Array,
         success: String
     },
     methods: route(),
@@ -80,7 +89,25 @@ export default {
         };
 
 
-        return { activeTab, setActiveTab, editUser, banUser, showUserProfile, success };
+        const processQuestion = async (questionId) => {
+            if (confirm('Вы уверены в этом действии?')) {
+                try {
+                    await axios.post(`/admin/question/${questionId}/process`, {});
+                    Inertia.visit(route('admin.index'), {
+                        preserveState: true,
+                        preserveScroll: true,
+                        only: ['questions', 'success']
+                    });
+                    setActiveTab('questions')
+                    success.value = "Статус вопроса успешно изменён";
+                } catch (error) {
+                    console.error('Ошибка при изменении статуса:', error);
+                }
+            }
+        };
+
+
+        return { activeTab, setActiveTab, editUser, banUser, showUserProfile, success, processQuestion };
     }
 }
 </script>

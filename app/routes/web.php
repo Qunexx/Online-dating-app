@@ -38,6 +38,7 @@ Route::post('/reset-password', [RestorePasswordController::class, 'resetPassword
 Route::get('/about',[AboutController::class, 'index'])->name('about');
 Route::get('/blog',[BlogController::class, 'index'])->name('blog');
 Route::get('/contact',[ContactController::class, 'index'])->name('contact');
+Route::post('/contact',[ContactController::class, 'create'])->name('contact.create');
 Route::get('/banned',[BanController::class, 'index'])->name('banned');
 
 Route::middleware([AuthMiddleware::class])->group(function () {
@@ -81,6 +82,8 @@ Route::prefix('admin')->middleware(AdminRoleMiddleware::class)->group(function (
     Route::get('/users/{id}/edit', [AdminController::class, 'editUser'])->name('admin.users.edit');
     Route::post('/user/{id}', [AdminController::class, 'updateUser'])->name('admin.users.update');
     Route::post('/user/ban/{id}', [AdminController::class, 'banUser'])->name('admin.users.ban');
+    Route::get('/questions', [AdminController::class, 'showQuestions'])->name('admin.questions.list');
+    Route::post('/question/{id}/process', [AdminController::class, 'processQuestion'])->name('admin.questions.process');
 });
 
 

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h2>Пользователи</h2>
+        <h2>Вопросы и предложения</h2>
         <div class="mb-3">
             <input type="text" v-model="searchQuery" @input="searchUsers" placeholder="Поиск по имени или email" class="form-control">
         </div>
@@ -11,27 +11,23 @@
                     <th @click="sortBy('id')">ID</th>
                     <th @click="sortBy('name')">Имя</th>
                     <th @click="sortBy('email')">Email</th>
-                    <th @click="sortBy('role')">Роль</th>
-                    <th @click="sortBy('is_banned')">Заблокирован</th>
+                    <th @click="sortBy('message')">Сообщение</th>
+                    <th @click="sortBy('is_processed')">Обработана</th>
                     <th>Действия</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr v-for="user in filteredUsers" :key="user.id">
-                    <td>{{ user.id }}</td>
-                    <td>{{ user.name }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.role }}</td>
-                    <td>{{ user.is_banned ? 'Да' : 'Нет' }}</td>
+                <tr v-for="question in filteredQuestions" :key="question.id">
+                    <td>{{ question.id }}</td>
+                    <td>{{ question.name }}</td>
+                    <td>{{ question.email }}</td>
+                    <td>{{ question.message }}</td>
+                    <td>{{ question.is_processed ? 'Да' : 'Нет' }}</td>
                     <td>
-                        <button @click="editUser(user.id)" class="btn btn-xs btn-primary me-2 mb-2">Редактировать</button>
-                        <button @click="showProfile(user.id)" class="btn btn-xs btn-primary me-2 mb-2">Показать профиль</button>
-                        <div v-if="user.is_banned">
-                            <button @click="banUser(user.id)" class="btn btn-xs btn-danger">Разблокировать</button>
+                        <div v-if="!question.is_processed">
+                            <button @click="processQuestion(question.id)" class="btn btn-xs btn-primary me-2" :disabled="question.is_processed">Обработать</button>
                         </div>
-                        <div v-else>
-                            <button @click="banUser(user.id)" class="btn btn-xs btn-danger">Заблокировать</button>
-                        </div>
+                        <button @click="resendEmail(question.id)" class="btn btn-xs btn-primary me-2" :disabled="!question.is_processed">Ответить</button>
                     </td>
                 </tr>
                 </tbody>
@@ -45,23 +41,24 @@ import { ref, computed } from 'vue';
 
 export default {
     props: {
-        users: Array
+        questions: Array
     },
-    emits: ['edit-user', 'ban-user', 'show-user-profile'],
+    emits: ['process-question'],
     setup(props, { emit }) {
         const searchQuery = ref('');
         const sortField = ref('');
         const sortDirection = ref('asc');
-        const filteredUsers = computed(() => {
-            let users = props.users;
+        const filteredQuestions = computed(() => {
+
+            let questions = props.questions;
             if (searchQuery.value) {
                 const query = searchQuery.value.toLowerCase();
-                users = users.filter(user => {
-                    return user.name.toLowerCase().includes(query) || user.email.toLowerCase().includes(query);
+                questions = questions.filter(question => {
+                    return question.name.toLowerCase().includes(query) || question.email.toLowerCase().includes(query);
                 });
             }
             if (sortField.value) {
-                users = users.sort((a, b) => {
+                questions = questions.sort((a, b) => {
                     const aValue = a[sortField.value];
                     const bValue = b[sortField.value];
 
@@ -71,10 +68,8 @@ export default {
                 });
             }
 
-            return users;
+            return questions;
         });
-        const searchUsers = () => {
-        };
         const sortBy = (field) => {
             if (sortField.value === field) {
                 sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc';
@@ -83,26 +78,16 @@ export default {
                 sortDirection.value = 'asc';
             }
         };
-        const editUser = (userId) => {
-            emit('edit-user', userId);
+        const processQuestion = (questionId) => {
+            emit('process-question', questionId);
         };
 
-        const banUser = (userId) => {
-            emit('ban-user', userId);
-        };
-
-        const showProfile = (userId) => {
-            emit('show-user-profile', userId);
-        };
 
         return {
             searchQuery,
-            filteredUsers,
+            filteredQuestions,
             sortBy,
-            searchUsers,
-            editUser,
-            banUser,
-            showProfile
+            processQuestion,
         };
     }
 }

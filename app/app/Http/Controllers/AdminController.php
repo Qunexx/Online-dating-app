@@ -21,9 +21,12 @@ class AdminController extends Controller
     public function index(): \Inertia\Response
     {
         $users = $this->adminService->getAllUsers();
+        $questions = $this->adminService->getAllQuestions();
+
 
         return Inertia::render('admin/index', [
             'users' => $users,
+            'questions' => $questions,
             'success' => session()->get('success'),
         ]);
     }
@@ -58,6 +61,14 @@ class AdminController extends Controller
     public function banUser(int $id): bool
     {
         $status = $this->adminService->banUser($id);
+
+        return $status;
+    }
+
+
+    public function processQuestion(int $id): bool
+    {
+        $status = $this->adminService->processQuestion($id);
 
         return $status;
     }
