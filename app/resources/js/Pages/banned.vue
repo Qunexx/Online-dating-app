@@ -4,21 +4,27 @@
             <h1 class="text-center mb-5">Страница блокировки</h1>
             <div class="row">
                 <div class="col-md-6">
+                    <div v-if="successMessage" class="alert alert-success">
+                        {{ successMessage }}
+                    </div>
+                    <div v-if="errorMessage" class="alert alert-success">
+                        {{ errorMessage }}
+                    </div>
                     <h2 class="mb-4">Свяжитесь с нами, ваш доступ к функциям сайта, требующим авторизацию, ограничен</h2>
                     <p>К сожалению, ваш аккаунт был заблокирован по какой-то причине. Для уточнения причины блокировки и возможности её обжалования, пожалуйста, заполните форму ниже. Мы свяжемся с вами по указанному email для дальнейших инструкций.</p>
                     <h2 class="mb-4">Форма для вопросов и предложений</h2>
                     <form @submit.prevent="submitForm">
                         <div class="form-group">
                             <label for="name">Ваше имя</label>
-                            <input type="text" class="form-control" id="name" v-model="form.name" required>
+                            <input type="text" class="form-control" id="name" v-model="name" required>
                         </div>
                         <div class="form-group">
                             <label for="email">Ваш email</label>
-                            <input type="email" class="form-control" id="email" v-model="form.email" required>
+                            <input type="email" class="form-control" id="email" v-model="email" required>
                         </div>
                         <div class="form-group">
                             <label for="message">Ваше сообщение</label>
-                            <textarea class="form-control" id="message" rows="5" v-model="form.message" required></textarea>
+                            <textarea class="form-control" id="message" rows="5" v-model="message" required></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary mb-5">Отправить</button>
                     </form>
@@ -42,11 +48,11 @@ export default {
     props: {},
     data() {
         return {
-            form: {
-                name: '',
-                email: '',
-                message: ''
-            }
+            name: '',
+            email: '',
+            message: '',
+            successMessage: '',
+            errorMessage: '',
         };
     },
     computed: {
@@ -57,19 +63,28 @@ export default {
     methods: {
         async submitForm() {
             try {
-                alert('Ваше сообщение успешно отправлено! Мы свяжемся с вами по указанному email.');
-                this.form.name = '';
-                this.form.email = '';
-                this.form.message = '';
+                const response = await axios.post('/contact', {
+                        name: this.name,
+                        email: this.email,
+                        message: this.message
+                    }
+                );
+                this.successMessage = response.data.success;
+                this.name = '';
+                this.email = '';
+                this.message = '';
+                this.errorMessage = null;
             } catch (error) {
                 console.error('Ошибка отправки сообщения:', error);
-                alert('Произошла ошибка при отправке сообщения. Пожалуйста, попробуйте еще раз.');
+                this.errorMessage = error.response.data.error;
+                this.successMessage = null;
             }
         },
         asset(path) {
             return window.location.origin + '/' + path;
         }
-    }}
+    },
+}
 </script>
 
 <style scoped>
