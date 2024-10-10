@@ -55,23 +55,19 @@ Route::middleware([AuthMiddleware::class])->group(function () {
             Route::get('/', [ProfileController::class, 'index'])->name('profile.index');
             Route::get('/edit', [ProfileController::class, 'edit'])->name('profile.edit');
             Route::post('/update', [ProfileController::class, 'update'])->name('profile.update');
-            Route::get('/{user_id}', [ProfileController::class, 'show'])->name('profile.show');
+            Route::get('/{userId}', [ProfileController::class, 'show'])->name('profile.show');
         });
 
         Route::prefix('messages')->group(function () {
             Route::get('/', [MessageController::class, 'index'])->name('messages.index');
-            Route::get('/{recipient}', [MessageController::class, 'fetchMessages'])->name('messages.fetchMessages');
+            Route::get('/{recipientId}', [MessageController::class, 'fetchMessages'])->name('messages.fetchMessages');
             Route::post('/', [MessageController::class, 'store'])->name('messages.post');
         });
 
         Route::get('/search-pair', [PairSearchingController::class, 'searchPair'])->name('search-pair');
 
-        Route::post('/profiles/{profile}/like', [PairSearchingController::class, 'like'])->name('profiles.like');
-        Route::post('/profiles/{profile}/dislike', [PairSearchingController::class, 'dislike'])->name('profiles.dislike');
-
-
-
-
+        Route::post('/profiles/{profileId}/like', [PairSearchingController::class, 'like'])->name('profiles.like');
+        Route::post('/profiles/{profileId}/dislike', [PairSearchingController::class, 'dislike'])->name('profiles.dislike');
     });
 });
 
@@ -86,5 +82,3 @@ Route::prefix('admin')->middleware(AdminRoleMiddleware::class)->group(function (
     Route::post('/question/{id}/process', [AdminController::class, 'processQuestion'])->name('admin.questions.process');
     Route::post('/close-session/{sessionId}', [AdminController::class, 'closeUserSession'])->name('admin.session.close');
 });
-
-

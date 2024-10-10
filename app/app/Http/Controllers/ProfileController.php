@@ -32,9 +32,9 @@ class ProfileController extends Controller
         ]);
     }
 
-    public function show(int $user_id): \Inertia\Response
+    public function show(int $userId): \Inertia\Response
     {
-        $data = $this->service->getUserProfile($user_id);
+        $data = $this->service->getUserProfile($userId);
 
         return Inertia::render('profile/show', [
             'profile' => $data['profile'],

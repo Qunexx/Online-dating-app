@@ -4,8 +4,10 @@ namespace App\Http\Services;
 
 use App\Events\NewNotification;
 use App\Models\Notification;
+use App\Models\Profile;
 use App\Models\ProfilePhoto;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -72,6 +74,12 @@ class UserService
         }
 
         return true;
+    }
+
+    public function getUserProfileByProfileId(int $profile_id): Profile
+    {
+        $profile = Profile::query()->get()->where('id', '=', $profile_id)->firstOrFail();
+        return $profile;
     }
 
 }

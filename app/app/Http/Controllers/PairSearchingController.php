@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Services\NotificationService;
 use App\Http\Services\PairSearchingService;
+use App\Http\Services\UserService;
 use App\Models\Like;
 use App\Models\Profile;
 use App\Models\User;
@@ -15,11 +16,13 @@ class PairSearchingController extends Controller
 {
     protected $pairSearchingService;
     protected $notificationService;
+    protected $userService;
 
-    public function __construct(PairSearchingService $pairSearchingService, NotificationService $notificationService)
+    public function __construct(PairSearchingService $pairSearchingService, NotificationService $notificationService, UserService $userService)
     {
         $this->pairSearchingService = $pairSearchingService;
         $this->notificationService = $notificationService;
+        $this->userService = $userService;
     }
 
     public function searchPair(): \Inertia\Response
@@ -32,8 +35,9 @@ class PairSearchingController extends Controller
 
     }
 
-    public function like(Profile $profile): \Inertia\Response
+    public function like(int $profileId): \Inertia\Response
     {
+        $profile = $this->userService->getUserProfileByProfileId($profileId);
         $result = $this->pairSearchingService->putLike($profile);
 
         $this->notificationService->createNotification(
@@ -48,8 +52,9 @@ class PairSearchingController extends Controller
         ]);
     }
 
-    public function dislike(Profile $profile): RedirectResponse
+    public function dislike(int $profileId): RedirectResponse
     {
+        $profile = $this->userService->getUserProfileByProfileId($profileId);
         $this->pairSearchingService->putDisLike($profile);
         return redirect()->route('search-pair');
     }

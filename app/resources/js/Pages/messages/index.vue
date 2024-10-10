@@ -140,7 +140,7 @@ export default {
                     });
 
         },
-        selectRecipient(recipientId) {
+        selectRecipient(recipientId = null) {
             if (this.$refs.chatBox) {
                 this.scrollPosition = this.$refs.chatBox.scrollTop;
                 localStorage.setItem(`scrollPosition_${this.selectedRecipient}`, this.scrollPosition);

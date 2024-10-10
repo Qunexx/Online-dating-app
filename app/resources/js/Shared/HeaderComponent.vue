@@ -61,7 +61,7 @@
                             <li v-for="(notification, index) in notifications" :key="notification.id" class="notification-item">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div v-if="notification.from_user_id !== null">
-                                        <Link :href="route('messages.fetchMessages', { recipient: notification.from_user_id })">
+                                        <Link :href="route('messages.fetchMessages', { recipientId: notification.from_user_id })">
                                             <span class="notification-message">{{ notification.message }}</span>
                                         </Link>
                                     </div>
