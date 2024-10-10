@@ -84,7 +84,7 @@ Route::prefix('admin')->middleware(AdminRoleMiddleware::class)->group(function (
     Route::post('/user/ban/{id}', [AdminController::class, 'banUser'])->name('admin.users.ban');
     Route::get('/questions', [AdminController::class, 'showQuestions'])->name('admin.questions.list');
     Route::post('/question/{id}/process', [AdminController::class, 'processQuestion'])->name('admin.questions.process');
+    Route::post('/close-session/{sessionId}', [AdminController::class, 'closeUserSession'])->name('admin.session.close');
 });
-
 
 

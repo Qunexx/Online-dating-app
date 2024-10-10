@@ -22,11 +22,13 @@ class AdminController extends Controller
     {
         $users = $this->adminService->getAllUsers();
         $questions = $this->adminService->getAllQuestions();
+        $sessions = $this->adminService->getUsersSessions();
 
 
         return Inertia::render('admin/index', [
             'users' => $users,
             'questions' => $questions,
+            'sessions' => $sessions,
             'success' => session()->get('success'),
         ]);
     }
@@ -71,6 +73,23 @@ class AdminController extends Controller
         $status = $this->adminService->processQuestion($id);
 
         return $status;
+    }
+
+    public function getUserSessions(): array
+    {
+        $sessions = $this->adminService->getUsersSessions();
+
+        return $sessions;
+    }
+
+    public function closeUserSession(string $session_id): bool
+    {
+        $status = $this->adminService->closeUserSession($session_id);
+        if($status){
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

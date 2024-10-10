@@ -16,7 +16,7 @@
                     <a class="nav-link" :class="{ active: activeTab === 'reports' }" @click="setActiveTab('users')">Жалобы</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" :class="{ active: activeTab === 'sessions' }" @click="setActiveTab('users')">Активные сессии</a>
+                    <a class="nav-link" :class="{ active: activeTab === 'sessions' }" @click="setActiveTab('sessions')">Активные сессии</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" :class="{ active: activeTab === 'admin_activity' }" @click="setActiveTab('users')">Последние действия в админке</a>
@@ -32,6 +32,9 @@
                 <div v-if="activeTab === 'questions'" class="tab-pane active">
                     <QuestionsTab :questions="questions" @process-question="processQuestion"/>
                 </div>
+                <div v-if="activeTab === 'sessions'" class="tab-pane active">
+                    <SessionsTab :sessions="sessions" @close-session="closeSession"/>
+                </div>
             </div>
         </div>
     </DefaultLayout>
@@ -45,9 +48,11 @@ import UsersTab from './usersTab.vue';
 import {route} from "ziggy-js";
 import axios from "axios";
 import QuestionsTab from "./questionsTab.vue";
+import SessionsTab from "./sessionsTab.vue";
 
 export default {
     components: {
+        SessionsTab,
         QuestionsTab,
         DefaultLayout,
         UsersTab,
@@ -55,6 +60,7 @@ export default {
     props: {
         users: Array,
         questions: Array,
+        sessions: Array,
         success: String
     },
     methods: route(),
@@ -63,6 +69,11 @@ export default {
         const success = ref(props.success);
         const setActiveTab = (tab) => {
             activeTab.value = tab;
+            Inertia.visit(route('admin.index'), {
+                preserveState: true,
+                preserveScroll: true,
+                only: ['users','questions', 'sessions', 'success']
+            });
         };
 
         const editUser = (userId) => {
@@ -106,8 +117,25 @@ export default {
             }
         };
 
+        const closeSession = async (session_id) => {
+            if (confirm('Вы уверены в этом действии?')) {
+                try {
+                    await axios.post(`/admin/close-session/${session_id}`, {});
+                    Inertia.visit(route('admin.index'), {
+                        preserveState: true,
+                        preserveScroll: true,
+                        only: ['sessions', 'success']
+                    });
+                    setActiveTab('sessions')
+                    success.value = "Сессия успешно закрыта";
+                } catch (error) {
+                    console.error('Ошибка при изменении статуса:', error);
+                }
+            }
+        };
 
-        return { activeTab, setActiveTab, editUser, banUser, showUserProfile, success, processQuestion };
+
+        return { activeTab, setActiveTab, editUser, banUser, showUserProfile, success, processQuestion, closeSession };
     }
 }
 </script>

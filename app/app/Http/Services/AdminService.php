@@ -2,14 +2,11 @@
 
 namespace App\Http\Services;
 
-use App\Events\NewNotification;
-use App\Models\Notification;
-use App\Models\ProfilePhoto;
 use App\Models\Question;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+use function PHPUnit\Framework\assertNotTrue;
 
 class AdminService
 {
@@ -36,16 +33,17 @@ class AdminService
         return $user->is_banned;
     }
 
-    public function updateUser(array $request, User $user) : bool
+    public function updateUser(array $request, User $user): bool
     {
 
         $result = $user->update($request);
-        if($result){
+        if ($result) {
             return true;
         } else {
             return false;
         }
     }
+
     public function getAllQuestions(): Collection
     {
         $questions = Question::get();
@@ -59,12 +57,38 @@ class AdminService
 
         $question->is_processed = !$question->is_processed;
         $question->save();
-        if($question){
+        if ($question) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
+    }
+
+    public function getUsersSessions(): ?array
+    {
+        $sessions = DB::table('sessions')
+            ->join('users', 'sessions.user_id', '=', 'users.id')
+            ->select('sessions.*', 'users.name', 'users.email')
+            ->get();
+        if ($sessions->isNotEmpty()) {
+            return $sessions->toArray();
+        } else {
+            return null;
+        }
+    }
+
+    public function closeUserSession(string $session_id): bool
+    {
+        $exist = DB::table('sessions')->where('id', '=', $session_id)->exists();
+        if ($exist) {
+            $deleted = DB::table('sessions')
+                ->where('id', '=', $session_id)
+                ->delete();
+            if ($deleted) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 
