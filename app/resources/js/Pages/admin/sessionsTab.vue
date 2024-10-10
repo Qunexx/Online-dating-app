@@ -53,7 +53,7 @@ export default {
             let sessions = props.sessions;
             if (searchQuery.value) {
                 const query = searchQuery.value.toLowerCase();
-                sessions = users.filter(user => {
+                sessions = sessions.filter(session => {
                     return session.name.toLowerCase().includes(query) || session.email.toLowerCase().includes(query);
                 });
             }
