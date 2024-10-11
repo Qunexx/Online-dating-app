@@ -42,7 +42,7 @@
 ```
 ### 8. Выполнить миграции для бд:
 ```bash
- docker-compose exec app php artisan migrate
+ docker-compose exec app php artisan migrate --seed
 ```
 ### 9. Запустить сборку фронтенда:
 ```bash
@@ -50,3 +50,9 @@
 ```
 ### 10. Открыть веб-приложение по урлу
 http://localhost
+
+### 11. Можно авторизоваться под одним из тестовых пользователей
+```bash
+Админ(логин:пароль): admin@admin.com:password
+Пользователь(логин:пароль): user@user.com:password
+```
